@@ -1,0 +1,70 @@
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
+
+    <!-- Logo / título -->
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">✈ Airline System</h2>
+      <p class="text-muted">Inicia sesión para continuar</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+    <pre *ngIf="responseDebug" class="small text-muted bg-light p-2 rounded">
+      {{ responseDebug }}
+    </pre>
+
+    <!-- Formulario -->
+    <form (ngSubmit)="login()">
+
+      <div class="mb-3">
+        <label class="form-label">Usuario</label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="username"
+          name="username"
+          placeholder="Ingresa tu usuario"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <input
+          type="password"
+          class="form-control"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Ingresa tu contraseña"
+          required
+        />
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <a routerLink="/recuperar-password" class="text-decoration-none small">
+          ¿Olvidaste tu contraseña?
+        </a>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary w-100"
+        [disabled]="cargando">
+        {{ cargando ? 'Iniciando sesión...' : 'Iniciar sesión' }}
+      </button>
+
+    </form>
+
+    <hr />
+
+    <div class="text-center">
+      <span class="small text-muted">¿No tienes cuenta? </span>
+      <a routerLink="/registro" class="small">Regístrate aquí</a>
+    </div>
+
+
+    
+  </div>
+</div>

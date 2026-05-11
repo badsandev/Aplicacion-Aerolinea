@@ -1,0 +1,115 @@
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card shadow p-4" style="width: 100%; max-width: 450px;">
+
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">✈ Airline System</h2>
+      <p class="text-muted">Crea tu cuenta</p>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+    <form (ngSubmit)="registrar()">
+
+      <div class="mb-3">
+        <label class="form-label">Usuario</label>
+        <input type="text" class="form-control"
+               [(ngModel)]="username" name="username"
+               placeholder="Nombre de usuario" required/>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control"
+               [(ngModel)]="email" name="email"
+               placeholder="Correo electrónico" required/>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <input type="password" class="form-control"
+               [(ngModel)]="password" name="password"
+               placeholder="Mínimo 6 caracteres" required/>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Confirmar contraseña</label>
+        <input type="password" class="form-control"
+               [(ngModel)]="confirmarPassword" name="confirmarPassword"
+               placeholder="Repite tu contraseña" required/>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Tipo de usuario</label>
+        <select class="form-select" [(ngModel)]="rol" name="rol">
+          <option value="OPERADOR">Operador</option>
+          <option value="PILOTO">Piloto</option>
+          <option value="TRIPULANTE">Tripulante</option>
+        </select>
+      </div>
+
+      <div *ngIf="rol === 'PILOTO'">
+        <div class="mb-3">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="nombre" name="nombre"
+                 placeholder="Nombre completo"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Código</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="codigo" name="codigo"
+                 placeholder="Código de piloto"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Licencia</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="licencia" name="licencia"
+                 placeholder="Número de licencia"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Horas de vuelo</label>
+          <input type="number" class="form-control"
+                 [(ngModel)]="horasDeVuelo" name="horasDeVuelo"
+                 placeholder="Horas de vuelo"/>
+        </div>
+      </div>
+
+      <div *ngIf="rol === 'TRIPULANTE'">
+        <div class="mb-3">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="nombre" name="nombre"
+                 placeholder="Nombre completo"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Código</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="codigo" name="codigo"
+                 placeholder="Código de tripulante"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Rol en tripulación</label>
+          <select class="form-select" [(ngModel)]="rolTripulante" name="rolTripulante">
+            <option value="">Selecciona un rol</option>
+            <option value="COPILOTO">Copiloto</option>
+            <option value="AZAFATA">Azafata</option>
+            <option value="SOBRECARGO">Sobrecargo</option>
+            <option value="TECNICO">Técnico</option>
+            <option value="SEGURIDAD">Seguridad</option>
+            <option value="MEDICO">Médico</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" [disabled]="cargando">
+        {{ cargando ? 'Registrando...' : 'Crear cuenta' }}
+      </button>
+    </form>
+
+    <hr/>
+    <div class="text-center">
+      <span class="small text-muted">¿Ya tienes cuenta? </span>
+      <a routerLink="/login" class="small">Inicia sesión</a>
+    </div>
+  </div>
+</div>
