@@ -117,13 +117,11 @@ Crea un archivo `.env` en la carpeta `backend/`:
 
 ```env
 DB_URL=jdbc:postgresql://localhost:5432/aerolinea
->>>>>>> 8610fdf (docs: actualizar README con documentación completa)
 DB_USERNAME=postgres
 DB_PASSWORD=tu_password
 JWT_SECRET=tu_clave_base64
 MAIL_USERNAME=tu_correo@gmail.com
 MAIL_PASSWORD=tu_app_password_gmail
-<<<<<<< HEAD
 
 Nota: Para generar el JWT_SECRET en Base64:
 javaString encoded = Base64.getEncoder().encodeToString(
