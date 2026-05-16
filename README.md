@@ -13,7 +13,6 @@ Sistema de gestión para aerolíneas desarrollado con **Spring Boot** (backend R
 ## 🏗 Arquitectura
 
 ```
->>>>>>> 8610fdf (docs: actualizar README con documentación completa)
 ┌─────────────────────┐         ┌──────────────────────┐
 │   Angular 21        │  HTTP   │   Spring Boot 4       │
 │   Puerto: 4200      │◄───────►│   Puerto: 8081        │
