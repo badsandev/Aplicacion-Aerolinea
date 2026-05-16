@@ -161,7 +161,6 @@ Vuelos (/api/vuelos)
 MétodoEndpointDescripciónAuthGET/api/vuelosListar todosADMIN, OPERADORGET/api/vuelos/{id}Buscar por IDADMIN, OPERADORGET/api/vuelos/estado/{estado}Filtrar por estadoADMIN, OPERADORGET/api/vuelos/piloto/{id}Vuelos de un pilotoADMIN, PILOTOGET/api/vuelos/tripulante/{id}Vuelos de un tripulanteADMIN, TRIPULANTEPOST/api/vuelosCrear vueloADMIN, OPERADORPUT/api/vuelos/{id}ActualizarADMIN, OPERADORPUT/api/vuelos/{id}/cancelarCancelar vueloADMIN, OPERADORPATCH/api/vuelos/{id}/aterrizarRegistrar aterrizajeADMIN, OPERADORPATCH/api/vuelos/{id}/retrasarRetrasar vueloADMIN, OPERADOR
 
 🗄 Modelo de Base de Datos
-=======
 ```
 
 > **Nota:** Para generar el `JWT_SECRET` en Base64:
@@ -423,5 +422,5 @@ Importa el archivo `airline-api.postman_collection.json` en Postman para probar 
 
 ## 📄 Licencia
 
->>>>>>> 8610fdf (docs: actualizar README con documentación completa)
+
 Este proyecto fue desarrollado como trabajo académico.
