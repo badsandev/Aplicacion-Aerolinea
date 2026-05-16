@@ -51,7 +51,7 @@ sqlCREATE DATABASE aerolinea;
 3. Configurar variables de entorno del backend
 Crea un archivo .env en la carpeta backend/:
 envDB_URL=jdbc:postgresql://localhost:5432/aerolinea
-=======
+
 ```
 
 ---
