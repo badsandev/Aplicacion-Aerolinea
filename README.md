@@ -24,7 +24,6 @@ Sistema de gestión para aerolíneas desarrollado con **Spring Boot** (backend R
                                 │   Puerto: 5432        │
                                 │   BD: aerolinea       │
                                 └──────────────────────┘
-<<<<<<< HEAD
 
 🛠 Tecnologías
 Backend
