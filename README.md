@@ -329,7 +329,6 @@ vuelo_tripulacion
 ## 📁 Estructura del Proyecto
 
 ```
->>>>>>> 8610fdf (docs: actualizar README con documentación completa)
 airline-management-system/
 ├── backend/                          # Spring Boot API REST
 │   ├── src/main/java/
