@@ -286,7 +286,6 @@ La aplicación estará disponible en `http://localhost:4200`
 ## 🗄 Modelo de Base de Datos
 
 ```
->>>>>>> 8610fdf (docs: actualizar README con documentación completa)
 usuario
 ├── id, username, email, password, rol, activo
 ├── piloto_id (FK → piloto)
@@ -324,7 +323,6 @@ vuelo_tripulacion
 <<<<<<< HEAD
 
 📁 Estructura del Proyecto
-=======
 ```
 
 ---
@@ -365,7 +363,6 @@ airline-management-system/
                 ├── piloto/
                 ├── tripulante/
                 └── operador/
-<<<<<<< HEAD
 
 🔑 Autenticación
 El sistema usa JWT (JSON Web Tokens). Para acceder a los endpoints protegidos:
@@ -389,7 +386,7 @@ Abre un Pull Request
 
 
 📄 Licencia
-=======
+
 ```
 
 ---
