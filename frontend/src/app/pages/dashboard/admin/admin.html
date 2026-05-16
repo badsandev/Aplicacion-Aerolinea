@@ -1,1 +1,111 @@
-<p>admin works!</p>
+@if (loading) {
+  <div class="dash-loading">
+    Cargando datos...
+  </div>
+
+}@else if (error) {
+  <div class="dash-error">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    No se pudo conectar con el servidor. Verifica que la API esté activa.
+  </div>
+
+}@else {
+
+  <div class="dash-top">
+    <div>
+      <h2 class="page-title">Dashboard Principal</h2>
+      <p class="page-sub">Vista general del sistema de gestión aeronáutica</p>
+    </div>
+
+    <div class="dash-update">
+      <span>Última actualización</span>
+      <strong>Hoy, {{ today | date:'HH:mm' }}</strong>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    @for (card of stats; track card.label) {
+      <div class="stat-card stat-card--{{ card.cardBg }}">
+        <span class="stat-card__dot"></span>
+        <div class="stat-card__icon stat-card__icon--{{ card.iconBg }}">
+          <i class="bi {{ card.icon }}"></i>
+        </div>
+        <div class="stat-card__value">{{ card.value }}</div>
+        <div class="stat-card__label">{{ card.label }}</div>
+        <div class="stat-card__delta">{{ card.delta }}</div>
+      </div>
+    }
+  </div>
+
+  <div class="mini-grid">
+    @for (m of miniCards; track m.label) {
+      <div class="mini-card">
+        <div>
+          <div class="mini-card__value" [style.color]="m.color">{{ m.value }}</div>
+          <div class="mini-card__label">{{ m.label }}</div>
+        </div>
+        <i class="bi {{ m.icon }} mini-card__icon"></i>
+      </div>
+    }
+  </div>
+
+  <div class="panels-grid">
+
+    <div class="ag-panel">
+      <div class="ag-panel__header ag-panel__header--blue">
+        <i class="bi bi-calendar-event-fill"></i>
+        <div>
+          <h3>Vuelos de Hoy</h3>
+          <p>Vista de vuelos programados</p>
+        </div>
+      </div>
+
+      <div class="ag-panel__body">
+        @for (f of flights; track f.code) {
+          <div class="flight-row">
+            <div class="flight-row__icon">
+              <i class="bi bi-airplane-fill"></i>
+            </div>
+            <div>
+              <div class="flight-row__code">{{ f.code }}</div>
+              <div class="flight-row__route">{{ f.route }}</div>
+            </div>
+            <div class="flight-row__right">
+              <span class="flight-row__time">{{ f.time }}</span>
+              <span class="badge {{ f.statusClass }}">{{ f.statusLabel }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="ag-panel">
+      <div class="ag-panel__header ag-panel__header--pink">
+        <i class="bi bi-graph-up-arrow"></i>
+        <div>
+          <h3>Actividad Reciente</h3>
+          <p>Últimas acciones del sistema</p>
+        </div>
+      </div>
+
+      <div class="ag-panel__body">
+        @for (a of activities; track a.title) {
+          <div class="activity-row">
+            <div class="activity-row__icon"
+                 [style.background]="a.iconBg"
+                 [style.color]="a.iconColor">
+              <i class="bi {{ a.icon }}"></i>
+            </div>
+            <div>
+              <div class="activity-row__title">{{ a.title }}</div>
+              <div class="activity-row__sub">{{ a.sub }}</div>
+              <div class="activity-row__time">⏱ {{ a.time }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+
+}

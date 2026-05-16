@@ -5,7 +5,6 @@ import com.tallerpiloto.piloto.model.Base;
 import com.tallerpiloto.piloto.model.Piloto;
 
 public record AvionResponseDTO(
-
         Long id,
 
     String codigo,

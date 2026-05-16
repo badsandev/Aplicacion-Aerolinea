@@ -1,0 +1,195 @@
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Gestión de Vuelos</h2>
+    <p class="page-sub">Programación y control de operaciones de vuelo</p>
+  </div>
+  <button class="btn-primary" (click)="openForm()">
+    <i class="bi bi-plus-lg"></i> Nuevo Vuelo
+  </button>
+</div>
+
+<div class="stat-row">
+  <div class="mini-stat mini-stat--blue">
+    <div class="mini-stat__icon"><i class="bi bi-calendar-event-fill"></i></div>
+    <div><div class="mini-stat__label">Total Vuelos</div><div class="mini-stat__value">{{ total }}</div></div>
+  </div>
+  <div class="mini-stat mini-stat--green">
+    <div class="mini-stat__icon mini-stat__icon--green"><i class="bi bi-airplane-fill"></i></div>
+    <div><div class="mini-stat__label">En Vuelo</div><div class="mini-stat__value">{{ enVuelo }}</div></div>
+  </div>
+  <div class="mini-stat mini-stat--orange">
+    <div class="mini-stat__icon mini-stat__icon--orange"><i class="bi bi-clock-fill"></i></div>
+    <div><div class="mini-stat__label">Programados</div><div class="mini-stat__value">{{ programados }}</div></div>
+  </div>
+</div>
+
+@if (showForm) {
+  <div class="ag-form-card">
+    <div class="ag-form-card__header ag-form-card__header--orange">
+      <h3><i class="bi bi-calendar-event-fill"></i> {{ editando ? 'Editar Vuelo' : 'Programar Nuevo Vuelo' }}</h3>
+      <p>Complete la información del vuelo</p>
+    </div>
+    <div class="ag-form-card__body">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Número de Vuelo <span class="required">*</span></label>
+          <input [(ngModel)]="nuevo.numVuelo" placeholder="Ej: AA-101"/>
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="nuevo.estado">
+            <option [value]="undefined">Programado (por defecto)</option>
+            @for (e of estados; track e) {
+              <option [value]="e">{{ e }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Base Origen <span class="required">*</span></label>
+          <select [(ngModel)]="nuevo.origenId">
+            <option [value]="undefined">Seleccione origen</option>
+            @for (b of bases; track b.id) {
+              <option [value]="b.id">{{ b.nombre }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Base Destino <span class="required">*</span></label>
+          <select [(ngModel)]="nuevo.destinoId">
+            <option [value]="undefined">Seleccione destino</option>
+            @for (b of bases; track b.id) {
+              <option [value]="b.id">{{ b.nombre }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha y Hora de Salida <span class="required">*</span></label>
+          <input type="datetime-local" [(ngModel)]="nuevo.fechaHoraSalida"/>
+        </div>
+        <div class="form-group">
+          <label>Fecha y Hora de Llegada</label>
+          <input type="datetime-local" [(ngModel)]="nuevo.fechaHoraLlegada"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Avión <span class="required">*</span></label>
+          <select [(ngModel)]="nuevo.avionId">
+            <option [value]="undefined">Seleccione avión</option>
+            @for (a of aviones; track a.id) {
+              <option [value]="a.id">{{ a.codigo }} — {{ a.tipo }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Piloto <span class="required">*</span></label>
+          <select [(ngModel)]="nuevo.pilotoId">
+            <option [value]="undefined">Seleccione piloto</option>
+            @for (p of pilotos; track p.id) {
+              <option [value]="p.id">{{ p.nombre }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tripulación (selección múltiple)</label>
+        <div class="tripulacion-grid">
+          @for (t of tripulantes; track t.id) {
+            <div class="tripulante-chip"
+                 [class.tripulante-chip--selected]="isTripulanteSelected(t.id)"
+                 (click)="toggleTripulante(t.id)">
+              <i class="bi bi-person-fill"></i>
+              {{ t.nombre }} <small>{{ t.rol }}</small>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+    <div class="ag-form-card__footer">
+      <button class="btn-save btn-save--orange" (click)="guardar()">
+        <i class="bi bi-floppy-fill"></i> {{ editando ? 'Actualizar' : 'Guardar Vuelo' }}
+      </button>
+      <button class="btn-cancel" (click)="closeForm()">
+        <i class="bi bi-x-lg"></i> Cancelar
+      </button>
+    </div>
+  </div>
+}
+
+<div class="ag-panel">
+  <div class="ag-panel__title-bar">
+    <h3>Vuelos Registrados</h3>
+    <p>{{ vuelos.length }} vuelos en el sistema</p>
+  </div>
+
+  @if (loading) {
+    <div style="padding: 20px; text-align: center; color: #9ca3af;">Cargando vuelos...</div>
+  } @else {
+    <div class="table-responsive">
+      <table class="ag-table">
+        <thead>
+          <tr>
+            <th>Vuelo</th>
+            <th>Ruta</th>
+            <th>Salida</th>
+            <th>Llegada</th>
+            <th>Avión</th>
+            <th>Piloto</th>
+            <th>Tripulación</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (v of vuelos; track v.id) {
+            <tr>
+              <td><span class="td-code">{{ v.numVuelo }}</span></td>
+              <td>{{ v.origen }} → {{ v.destino }}</td>
+              <td>{{ v.fechaHoraSalida | date:'dd/MM/yy HH:mm' }}</td>
+              <td>{{ v.fechaHoraLlegada ? (v.fechaHoraLlegada | date:'dd/MM/yy HH:mm') : '—' }}</td>
+              <td>{{ v.avion }}</td>
+              <td>{{ v.piloto }}</td>
+              <td>
+               @if (v.tripulacion && v.tripulacion.length) {
+                  <span class="badge badge--purple">{{ v.tripulacion.length }} miembros</span>
+                } @else {
+                  <span class="badge badge--gray">Sin tripulación</span>
+                }
+              </td>
+              <td><span class="badge {{ estadoClass(v.estado) }}">{{ v.estado }}</span></td>
+              <td>
+                <div class="td-actions">
+                  <button class="btn-table-edit" (click)="editar(v)" title="Editar">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  @if (v.estado === 'EN_VUELO') {
+                    <button class="btn-table-edit" (click)="aterrizar(v.id)" title="Registrar aterrizaje">
+                      <i class="bi bi-airplane-engines-fill"></i>
+                    </button>
+                  }
+                  @if (v.estado === 'PROGRAMADO' || v.estado === 'RETRASADO') {
+                    <button class="btn-table-del" (click)="cancelarVuelo(v.id)" title="Cancelar vuelo">
+                      <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="9" class="empty-table">No hay vuelos registrados.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,5 +1,6 @@
 package com.tallerpiloto.piloto.dto;
 
+import com.tallerpiloto.piloto.model.EstadoPersonalAereo;
 import com.tallerpiloto.piloto.model.RolTripulante;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,9 @@ public class TripulanteDTO {
 
     @NotBlank(message = "El nombre no puede estar vacío")
     private String nombre;
+
+    private EstadoPersonalAereo estado;
+
 
     private RolTripulante rol;
 

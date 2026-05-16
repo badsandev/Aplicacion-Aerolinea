@@ -3,37 +3,38 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
+import Swal from 'sweetalert2'; 
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './login.component.html'
+  
 })
 export class LoginComponent {
 
   username = '';
   password = '';
-  error = '';
   cargando = false;
-  
-  // 1. Declaramos la propiedad que falta
   responseDebug: any = null; 
 
   constructor(private authService: AuthService, private router: Router) {}
 
   login(): void {
-    this.error = '';
+   
+    if (this.cargando) return;
+
     this.cargando = true;
-    this.responseDebug = null; // Limpiamos el debug al iniciar
+    this.responseDebug = null;
 
     this.authService.login(this.username, this.password).subscribe({
       next: (res) => {
-        // 2. Guardamos la respuesta para verla en el <pre> del HTML
         this.responseDebug = JSON.stringify(res, null, 2);
         
+        // Extracción flexible de Token, Usuario y Roles
         const token = res?.token ?? res?.accessToken ?? res?.data?.token;
-        const username = res?.username ?? res?.user ?? '';
+        const username = res?.username ?? res?.user ?? this.username;
         
         const roleCandidate =
           res?.rol ??
@@ -42,22 +43,18 @@ export class LoginComponent {
           (Array.isArray(res?.authorities) ? res.authorities[0]?.authority : undefined) ??
           '';
           
-        const rol = typeof roleCandidate === 'string'
-          ? roleCandidate.trim().toUpperCase()
-          : String(roleCandidate).trim().toUpperCase();
-
-        console.log('Usuario autenticado:', username);
-        console.log('Rol detectado:', rol);
+        const rol = String(roleCandidate).trim().toUpperCase();
 
         if (!token) {
-          this.error = 'No se recibió token de autenticación';
           this.cargando = false;
+          Swal.fire('Error de Autenticación', 'Servidor no proporcionó un token.', 'error');
           return;
         }
 
+       
         this.authService.guardarSesion(token, rol, username);
-        this.cargando = false;
 
+        // Selección de ruta según el rol
         let path: string | null = null;
         if (rol.includes('ADMIN')) {
           path = '/admin/dashboard';
@@ -70,23 +67,39 @@ export class LoginComponent {
         }
 
         if (path) {
-          console.log('Navigating to', path);
-          this.router.navigateByUrl(path).catch((err) => {
-            console.error('Navigation failed', err);
-            this.error = 'No se pudo cambiar de página después de iniciar sesión.';
+          this.cargando = false;
+          
+          
+          Swal.fire({
+            icon: 'success',
+            title: `¡Bienvenido, ${username}!`,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
           });
-          return;
-        }
 
-        this.error = `Rol no reconocido: ${rol || '[vacío]'}`;
-        this.router.navigate(['/login']);
+          this.router.navigateByUrl(path).catch((err) => {
+            console.error('Error al navegar:', err);
+            Swal.fire('Error', 'La ruta de destino no existe.', 'error');
+          });
+        } else {
+          this.cargando = false;
+          Swal.fire('Acceso Denegado', `El rol [${rol}] no tiene permisos de acceso.`, 'warning');
+        }
       },
       error: (err) => {
-        console.error('Login error', err);
-        // 3. También capturamos el error para depuración
-        this.responseDebug = JSON.stringify(err, null, 2);
-        this.error = 'Usuario o contraseña incorrectos';
+        console.error('Error en el login:', err);
         this.cargando = false;
+        this.responseDebug = JSON.stringify(err, null, 2);
+        
+        Swal.fire({
+          icon: 'error',
+          title: 'Fallo al ingresar',
+          text: 'Usuario o contraseña no válidos.',
+          confirmButtonColor: '#3085d6'
+        });
       }
     });
   }

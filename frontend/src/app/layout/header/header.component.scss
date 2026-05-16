@@ -1,0 +1,29 @@
+@use 'styles/variables' as v;
+.header {
+  height: v.$header-height;
+  background: #fff;
+  border-bottom: 1px solid v.$gray-200;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  flex-shrink: 0;
+
+  &__title    { font-size: 15px; font-weight: 600; color: v.$gray-800; }
+  &__right    { display: flex; align-items: center; gap: 12px; }
+  &__user     { display: flex; align-items: center; gap: 10px; }
+  &__avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    @include v.gradient-blue;
+    color: #fff; font-size: 14px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  &__username { font-size: 13px; font-weight: 600; color: v.$gray-800; }
+  &__rol      { font-size: 11px; color: v.$gray-400; }
+  &__logout {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: v.$danger-light; border: none; cursor: pointer;
+    color: v.$danger; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    &:hover { background: #fecaca; }
+  }
+}

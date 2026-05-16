@@ -1,0 +1,133 @@
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Gestión de Bases</h2>
+    <p class="page-sub">Administración de bases operativas y centros de mantenimiento</p>
+  </div>
+  <button class="btn-primary" (click)="openForm()">
+    <i class="bi bi-plus-lg"></i> Nueva Base
+  </button>
+</div>
+
+<div class="stat-row">
+  <div class="mini-stat mini-stat--blue">
+    <div class="mini-stat__icon"><i class="bi bi-geo-alt-fill"></i></div>
+    <div><div class="mini-stat__label">Total Bases</div><div class="mini-stat__value">{{ totalBases }}</div></div>
+  </div>
+  <div class="mini-stat mini-stat--green">
+    <div class="mini-stat__icon mini-stat__icon--green"><i class="bi bi-building-fill"></i></div>
+    <div><div class="mini-stat__label">Operativas</div><div class="mini-stat__value">{{ basesOperativas }}</div></div>
+  </div>
+  <div class="mini-stat mini-stat--orange">
+    <div class="mini-stat__icon mini-stat__icon--orange"><i class="bi bi-tools"></i></div>
+    <div><div class="mini-stat__label">Mantenimiento</div><div class="mini-stat__value">{{ basesMantenimiento }}</div></div>
+  </div>
+</div>
+
+@if (showForm) {
+  <div class="ag-form-card">
+    <div class="ag-form-card__header ag-form-card__header--blue">
+      <h3><i class="bi bi-building-fill"></i> {{ editando ? 'Editar Base' : 'Registrar Nueva Base' }}</h3>
+      <p>Complete los datos de la base operativa</p>
+    </div>
+    <div class="ag-form-card__body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre de la Base <span class="required">*</span></label>
+          <input [(ngModel)]="nuevo.nombre" placeholder="Ej: Base El Dorado"/>
+        </div>
+        <div class="form-group">
+          <label>Ciudad</label>
+          <input [(ngModel)]="nuevo.ciudad" placeholder="Ej: Bogotá"/>
+        </div>
+      </div>
+      <div class="form-row form-row--3col">
+        <div class="form-group">
+          <label>Código IATA <span class="required">*</span></label>
+          <input [(ngModel)]="nuevo.codigoIata" placeholder="BOG" maxlength="3"/>
+          <small class="helper-text">3 caracteres</small>
+        </div>
+        <div class="form-group">
+          <label>Código ICAO <span class="required">*</span></label>
+          <input [(ngModel)]="nuevo.codigoIcao" placeholder="SKBO" maxlength="4"/>
+          <small class="helper-text">4 caracteres</small>
+        </div>
+        <div class="form-group">
+          <label>País</label>
+          <input [(ngModel)]="nuevo.pais" placeholder="Ej: Colombia"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>¿Es base de mantenimiento?</label>
+          <select [(ngModel)]="nuevo.esBaseMantenimiento">
+            <option [ngValue]="false">No — Operativa</option>
+            <option [ngValue]="true">Sí — Mantenimiento</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="ag-form-card__footer">
+      <button class="btn-save btn-save--blue" (click)="guardar()">
+        <i class="bi bi-floppy-fill"></i> {{ editando ? 'Actualizar' : 'Guardar Base' }}
+      </button>
+      <button class="btn-cancel" (click)="closeForm()">
+        <i class="bi bi-x-lg"></i> Cancelar
+      </button>
+    </div>
+  </div>
+}
+
+<div class="ag-panel">
+  <div class="ag-panel__title-bar">
+    <h3>Bases Registradas</h3>
+    <p>Lista de todas las bases operativas</p>
+  </div>
+
+  @if (loading) {
+    <div style="padding: 20px; text-align: center; color: #9ca3af;">Cargando bases...</div>
+  } @else {
+    <div class="bases-grid">
+      @for (b of bases; track b.id) {
+        <div class="base-card">
+          <div class="base-card__header" [class.base-card__header--blue]="!b.esBaseMantenimiento"
+                                         [class.base-card__header--dark]="b.esBaseMantenimiento">
+            <div class="base-card__header-left">
+              <div class="base-card__icon"><i class="bi bi-building-fill"></i></div>
+              <div>
+                <div class="base-card__name">{{ b.nombre }}</div>
+                <div class="base-card__city"><i class="bi bi-geo-alt-fill"></i> {{ b.ciudad }}, {{ b.pais }}</div>
+              </div>
+            </div>
+            <div class="base-card__code">{{ b.codigoIata }}</div>
+          </div>
+
+          <div class="base-stats">
+            <div class="base-stat">
+              <i class="bi bi-broadcast" style="color:#3b82f6"></i>
+              <div class="base-stat__num">{{ b.codigoIcao }}</div>
+              <div class="base-stat__lbl">ICAO</div>
+            </div>
+          </div>
+
+          <div class="base-card__footer">
+            <span [class]="tipoClass(b)">{{ tipoLabel(b) }}</span>
+            <div class="td-actions">
+              <button class="btn-table-edit" (click)="editar(b)" title="Editar">
+                <i class="bi bi-pencil-fill"></i>
+              </button>
+              @if (!b.esBaseMantenimiento) {
+                <button class="btn-table-del" (click)="eliminar(b.id)" title="Desactivar">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              } @else {
+                <button class="btn-table-edit" (click)="reactivar(b.id)" title="Reactivar">
+                  <i class="bi bi-check-circle-fill"></i>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

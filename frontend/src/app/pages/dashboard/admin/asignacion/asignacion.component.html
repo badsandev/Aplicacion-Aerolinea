@@ -1,0 +1,98 @@
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Asignación de Tripulación</h2>
+    <p class="page-sub">Asignar miembros de tripulación a vuelos programados</p>
+  </div>
+</div>
+
+<div class="assign-layout">
+
+  <!-- Panel izquierdo: vuelos -->
+  <div class="assign-panel">
+    <div class="assign-panel__header assign-panel__header--blue">
+      <h3><i class="bi bi-airplane-fill"></i> Seleccionar Vuelo</h3>
+      <p>Solo vuelos programados o retrasados</p>
+    </div>
+    <div class="assign-panel__body">
+      @if (loading) {
+        <div style="padding: 20px; text-align: center; color: #9ca3af;">Cargando vuelos...</div>
+      } @else if (vuelos.length === 0) {
+        <div style="padding: 20px; text-align: center; color: #9ca3af;">No hay vuelos disponibles.</div>
+      } @else {
+        @for (v of vuelos; track v.id) {
+          <div class="flight-sel"
+               [class.flight-sel--active]="vueloSeleccionado?.id === v.id"
+               (click)="seleccionarVuelo(v)">
+            <div class="flight-sel__head">
+              <div class="flight-sel__icon"><i class="bi bi-airplane-fill"></i></div>
+              <div>
+                <div class="flight-sel__code">{{ v.numVuelo }}</div>
+                <div class="flight-sel__plane">{{ v.avion }}</div>
+              </div>
+              @if (vueloSeleccionado?.id === v.id) {
+                <i class="bi bi-check-circle-fill flight-sel__check"></i>
+              }
+            </div>
+            <div class="flight-sel__route">{{ v.origen }} → {{ v.destino }}</div>
+            <div class="flight-sel__date">
+              <i class="bi bi-calendar3"></i> {{ formatFecha(v.fechaHoraSalida) }}
+            </div>
+            <div style="margin-top: 4px;">
+              <span class="badge badge--blue">{{ v.estado }}</span>
+              <span style="font-size: 0.75rem; color: #6b7280; margin-left: 8px;">
+                {{ v.tripulacionIds.length ?? 0 }} tripulante(s) asignado(s)
+                    
+              </span>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Panel derecho: tripulantes -->
+  <div class="assign-panel">
+    <div class="assign-panel__header assign-panel__header--purple">
+      <h3><i class="bi bi-people-fill"></i> Tripulación Disponible</h3>
+      <p>{{ tripulantesSeleccionados }} seleccionado(s)</p>
+    </div>
+    <div class="assign-panel__body">
+      @if (loadingTripulantes) {
+        <div style="padding: 20px; text-align: center; color: #9ca3af;">Cargando tripulantes...</div>
+      } @else if (tripulantes.length === 0) {
+        <div style="padding: 20px; text-align: center; color: #9ca3af;">No hay tripulantes disponibles.</div>
+      } @else {
+        @for (t of tripulantes; track t.id) {
+          <div class="crew-item" [class.crew-item--selected]="t.seleccionado">
+            <input type="checkbox" [(ngModel)]="t.seleccionado" class="crew-check"/>
+            <div class="crew-avatar">{{ initials(t.nombre) }}</div>
+            <div>
+              <div class="crew-name">
+                {{ t.nombre }}
+                @if (t.rol === 'SOBRECARGO') {
+                  <span class="crown">♛</span>
+                }
+              </div>
+              <div class="crew-code">{{ t.codigo }}</div>
+              <div class="crew-tags">
+                <span [class]="t.rol === 'SOBRECARGO' ? 'badge badge--purple' : 'badge badge--blue'">
+                  {{ t.rol }}
+                </span>
+                <span class="crew-base">Base: {{ t.base }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+    <div class="assign-panel__footer">
+      <button class="btn-save btn-save--blue"
+              style="width:100%; justify-content:center"
+              (click)="confirmar()"
+              [disabled]="!vueloSeleccionado">
+        <i class="bi bi-person-check-fill"></i> Confirmar Asignación
+      </button>
+    </div>
+  </div>
+
+</div>

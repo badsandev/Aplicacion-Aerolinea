@@ -1,15 +1,11 @@
 package com.tallerpiloto.piloto.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "piloto")
@@ -20,6 +16,13 @@ public class Piloto extends Persona{
 
     @Column(name = "horas_de_vuelo")
     private Double horasDeVuelo;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_actual")
+    private EstadoPersonalAereo estado;
+
+
 
 
 

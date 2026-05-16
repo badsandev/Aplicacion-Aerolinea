@@ -1,0 +1,27 @@
+<aside class="sidebar">
+  <div class="sidebar__logo">
+    <div class="sidebar__logo-icon">
+      <i class="bi bi-airplane-fill"></i>
+    </div>
+    <div>
+      <div class="sidebar__logo-name">AeroGestión</div>
+      <div class="sidebar__logo-sub">Sistema Administrativo</div>
+    </div>
+  </div>
+
+  <nav class="sidebar__nav">
+    @for (item of navItems; track item.route) {
+      <a class="sidebar__nav-item"
+         [routerLink]="item.route"
+         routerLinkActive="sidebar__nav-item--active">
+        <i class="bi {{ item.icon }}"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar__footer">
+    <div class="sidebar__footer-label">Versión del Sistema</div>
+    <div class="sidebar__footer-version">v1.0.0</div>
+  </div>
+</aside>

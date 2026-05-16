@@ -1,0 +1,205 @@
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Gestión de Tripulación</h2>
+    <p class="page-sub">Administración de tripulantes de cabina</p>
+  </div>
+  <button class="btn-primary" (click)="openForm()">
+    <i class="bi bi-plus-lg"></i>
+    Nuevo Tripulante
+  </button>
+</div>
+
+<div class="stat-row">
+  <div class="mini-stat mini-stat--purple">
+    <div class="mini-stat__icon mini-stat__icon--purple">
+      <i class="bi bi-people-fill"></i>
+    </div>
+    <div>
+      <div class="mini-stat__label">Total Tripulantes</div>
+      <div class="mini-stat__value">{{ total }}</div>
+    </div>
+  </div>
+  <div class="mini-stat mini-stat--violet">
+    <div class="mini-stat__icon mini-stat__icon--violet">
+      <i class="bi bi-person-badge-fill"></i>
+    </div>
+    <div>
+      <div class="mini-stat__label">Sobrecargos</div>
+      <div class="mini-stat__value">{{ jefes }}</div>
+    </div>
+  </div>
+  <div class="mini-stat mini-stat--blue">
+    <div class="mini-stat__icon mini-stat__icon--blue">
+      <i class="bi bi-people-fill"></i>
+    </div>
+    <div>
+      <div class="mini-stat__label">Azafatas</div>
+      <div class="mini-stat__value">{{ auxiliares }}</div>
+    </div>
+  </div>
+</div>
+
+@if (showForm) {
+  <div class="ag-form-card">
+    <div class="ag-form-card__header ag-form-card__header--purple">
+      <h3>
+        <i class="bi bi-person-plus-fill"></i>
+        {{ editando ? 'Editar Tripulante' : 'Registrar Nuevo Miembro' }}
+      </h3>
+      <p>Agregar tripulante al sistema</p>
+    </div>
+
+    <div class="ag-form-card__body">
+
+      @if (!editando) {
+        <div style="margin-bottom:1.5rem;border-bottom:1px solid #eee;padding-bottom:.5rem;">
+          <small style="text-transform:uppercase;font-weight:bold;font-size:.75rem;color:#6b7280;">
+            Datos de Acceso al Sistema
+          </small>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre de Usuario *</label>
+            <input [(ngModel)]="nuevo.username" name="username" placeholder="Ej: david.herrera"/>
+          </div>
+          <div class="form-group">
+            <label>Correo Electrónico *</label>
+            <input type="email" [(ngModel)]="nuevo.email" name="email" placeholder="tripulante@airline.com"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Contraseña *</label>
+            <input type="password" [(ngModel)]="nuevo.password" name="password" placeholder="Mínimo 6 caracteres"/>
+          </div>
+          <div class="form-group"></div>
+        </div>
+        <div style="margin:1.5rem 0;border-bottom:1px solid #eee;padding-bottom:.5rem;">
+          <small style="text-transform:uppercase;font-weight:bold;font-size:.75rem;color:#6b7280;">
+            Información del Tripulante
+          </small>
+        </div>
+      }
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Código de Tripulante</label>
+          <input [(ngModel)]="nuevo.codigo" name="codigo" placeholder="T-XXX"/>
+        </div>
+        <div class="form-group">
+          <label>Rol en Cabina</label>
+          <select [(ngModel)]="nuevo.rol" name="rol">
+            @for (r of roles; track r) {
+              <option [value]="r">{{ r }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="nuevo.estado" name="estado">
+            @for (e of estados; track e) {
+              <option [value]="e">{{ e }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Base Asignada <span style="color:#9ca3af;font-size:.8em;">(opcional)</span></label>
+          <select [(ngModel)]="nuevo.baseId" name="baseId">
+            <option [value]="undefined">Sin base</option>
+            @for (b of bases; track b.id) {
+              <option [value]="b.id">{{ b.nombre }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre Completo</label>
+          <input [(ngModel)]="nuevo.nombre" name="nombre" placeholder="Nombre completo del tripulante"/>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ag-form-card__footer">
+      <button class="btn-save btn-save--purple" (click)="guardar()">
+        <i class="bi bi-floppy-fill"></i>
+        {{ editando ? 'Actualizar' : 'Guardar' }}
+      </button>
+      <button class="btn-cancel" (click)="closeForm()">
+        <i class="bi bi-x-lg"></i>
+        Cancelar
+      </button>
+    </div>
+  </div>
+}
+
+<div class="ag-panel">
+  <div class="ag-panel__title-bar">
+    <h3>Tripulantes Registrados</h3>
+    <p>{{ tripulantes.length }} miembros en el sistema</p>
+  </div>
+
+  @if (loading) {
+    <div style="padding:20px;text-align:center;color:#9ca3af;">
+      Cargando tripulantes...
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="ag-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Rol</th>
+            <th>Estado Personal</th>
+            <th>Estado Sistema</th>
+            <th>Base</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of tripulantes; track t.id) {
+            <tr>
+              <td><span class="td-code">{{ t.codigo }}</span></td>
+              <td>
+                <div class="td-icon">
+                  <div class="crew-avatar">{{ initials(t.nombre) }}</div>
+                  {{ t.nombre }}
+                </div>
+              </td>
+              <td><span [class]="rolClass(t.rol)">{{ t.rol }}</span></td>
+              <td><span [class]="estadoClass(t.estado)">{{ estadoLabel(t.estado) }}</span></td>
+              <td>
+                <span [class]="t.activo ? 'status-op' : 'status-mant'">
+                  {{ t.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>{{ t.base }}</td>
+              <td>
+                <div class="td-actions">
+                  <button class="btn-table-edit" (click)="editar(t)" title="Editar">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  @if (t.activo) {
+                    <button class="btn-table-del" (click)="eliminar(t.id)" title="Desactivar">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  } @else {
+                    <button class="btn-table-edit" (click)="reactivar(t.id)" title="Reactivar">
+                      <i class="bi bi-check-circle-fill"></i>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

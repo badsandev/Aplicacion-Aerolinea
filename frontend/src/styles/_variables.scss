@@ -1,0 +1,52 @@
+// =============================================
+// AeroGestión — Variables SCSS globales
+// =============================================
+$primary:        #3b82f6;
+$primary-dark:   #1d4ed8;
+$primary-light:  #dbeafe;
+
+$success:        #10b981;
+$success-dark:   #059669;
+$success-light:  #d1fae5;
+
+$warning:        #f59e0b;
+$warning-dark:   #d97706;
+$warning-light:  #fef3c7;
+
+$danger:         #ef4444;
+$danger-light:   #fee2e2;
+
+$purple:         #8b5cf6;
+$purple-dark:    #7c3aed;
+$purple-light:   #ede9fe;
+
+$pink:           #ec4899;
+
+$gray-50:  #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-600: #6b7280;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+$sidebar-bg:    #1a2444;
+$sidebar-width: 220px;
+$header-height: 64px;
+$content-bg:    #f0f2f5;
+$card-radius:   14px;
+$input-radius:  8px;
+$border-color:  $gray-200;
+
+$shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+$shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+
+@mixin gradient-blue        { background: linear-gradient(135deg, $primary, $primary-dark); }
+@mixin gradient-green       { background: linear-gradient(135deg, $success, $success-dark); }
+@mixin gradient-purple      { background: linear-gradient(135deg, $purple, $purple-dark); }
+@mixin gradient-orange      { background: linear-gradient(135deg, $warning, #f97316); }
+@mixin gradient-pink        { background: linear-gradient(135deg, $pink, #db2777); }
+@mixin gradient-blue-cyan   { background: linear-gradient(135deg, $primary, #06b6d4); }
+@mixin gradient-purple-pink { background: linear-gradient(135deg, $purple, $pink); }

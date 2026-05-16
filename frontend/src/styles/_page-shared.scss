@@ -1,0 +1,148 @@
+@use 'styles/variables' as v;
+
+.page-title { font-size: 22px; font-weight: 700; color: v.$gray-900; margin-bottom: 4px; }
+.page-sub   { font-size: 13px; color: v.$gray-400; margin-bottom: 20px; }
+
+.page-header {
+  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;
+}
+.btn-primary {
+  @include v.gradient-blue; color: #fff; border: none;
+  padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  &:hover { opacity: 0.9; }
+}
+.stat-row {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px;
+}
+.mini-stat {
+  border-radius: v.$card-radius; padding: 18px;
+  display: flex; align-items: center; gap: 14px; box-shadow: v.$shadow-sm;
+  &--blue   { background: linear-gradient(135deg,#e0f2fe,#bfdbfe); }
+  &--green  { background: linear-gradient(135deg,#d1fae5,#a7f3d0); }
+  &--orange { background: linear-gradient(135deg,#fff7ed,#fed7aa); }
+  &--purple { background: linear-gradient(135deg,#ede9fe,#ddd6fe); }
+  &--violet { background: linear-gradient(135deg,#faf5ff,#ede9fe); }
+  &__icon {
+    width: 50px; height: 50px; @include v.gradient-blue;
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 20px;
+    &--green  { @include v.gradient-green;  }
+    &--orange { @include v.gradient-orange; }
+    &--purple { @include v.gradient-purple; }
+    &--blue   { @include v.gradient-blue;   }
+    &--violet { background: linear-gradient(135deg,#a855f7,#7c3aed); }
+  }
+  &__label { font-size: 12px; color: v.$gray-600; margin-bottom: 4px; }
+  &__value { font-size: 26px; font-weight: 800; color: v.$gray-900; }
+}
+.ag-form-card {
+  background: #fff; border-radius: v.$card-radius; overflow: hidden;
+  box-shadow: v.$shadow-sm; margin-bottom: 20px;
+  &__header {
+    padding: 16px 20px; color: #fff;
+    h3 { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    p  { font-size: 11.5px; opacity: 0.82; margin-top: 4px; }
+    &--blue   { @include v.gradient-blue;        }
+    &--green  { @include v.gradient-green;       }
+    &--purple { @include v.gradient-purple-pink; }
+    &--orange { @include v.gradient-orange;      }
+    &--cyan   { @include v.gradient-blue-cyan;   }
+  }
+  &__body   { padding: 20px; }
+  &__footer { padding: 0 20px 20px; display: flex; gap: 10px; }
+}
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;
+  &--full { grid-template-columns: 1fr; }
+  &--3col { grid-template-columns: repeat(3,1fr); }
+  &--4col { grid-template-columns: repeat(4,1fr); }
+}
+.form-group {
+  display: flex; flex-direction: column; gap: 5px;
+  label { font-size: 12px; font-weight: 600; color: v.$gray-700; }
+  input, select {
+    border: 1.5px solid v.$border-color; border-radius: v.$input-radius;
+    padding: 9px 12px; font-size: 13px; color: v.$gray-700;
+    outline: none; transition: border-color 0.15s; background: #fff;
+    &:focus { border-color: v.$primary; }
+  }
+}
+.btn-save {
+  padding: 10px 20px; border-radius: 8px; border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; color: #fff;
+  &:hover { opacity: 0.9; }
+  &--blue   { @include v.gradient-blue;   }
+  &--green  { @include v.gradient-green;  }
+  &--purple { @include v.gradient-purple; }
+  &--orange { @include v.gradient-orange; }
+}
+.btn-cancel {
+  padding: 10px 18px; border-radius: 8px; border: 1.5px solid v.$border-color;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  background: #fff; color: v.$gray-600;
+  display: flex; align-items: center; gap: 6px;
+  &:hover { background: v.$gray-50; }
+}
+.ag-panel {
+  background: #fff; border-radius: v.$card-radius; overflow: hidden; box-shadow: v.$shadow-sm;
+  &__title-bar {
+    padding: 14px 18px; border-bottom: 1px solid v.$gray-100;
+    h3 { font-size: 15px; font-weight: 700; color: v.$gray-900; }
+    p  { font-size: 12px; color: v.$gray-400; margin-top: 2px; }
+  }
+}
+.table-responsive { overflow-x: auto; }
+.ag-table {
+  width: 100%; border-collapse: collapse;
+  th {
+    font-size: 12px; color: v.$gray-600; font-weight: 600;
+    padding: 12px 14px; text-align: left;
+    border-bottom: 2px solid v.$gray-100; background: v.$gray-50; white-space: nowrap;
+  }
+  td {
+    font-size: 13px; color: v.$gray-700;
+    padding: 12px 14px; border-bottom: 1px solid v.$gray-100; vertical-align: middle;
+  }
+  tr:hover td { background: v.$gray-50; }
+}
+.td-icon  { display: flex; align-items: center; gap: 10px; }
+.td-code  { font-weight: 700; color: v.$gray-900; }
+.td-plane {
+  width: 30px; height: 30px; @include v.gradient-blue;
+  border-radius: 7px; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 13px; flex-shrink: 0;
+}
+.td-actions { display: flex; gap: 6px; }
+.btn-table-edit {
+  width: 30px; height: 30px; background: #f0f9ff; border: none; border-radius: 6px;
+  cursor: pointer; color: v.$primary; font-size: 14px;
+  display: inline-flex; align-items: center; justify-content: center;
+  &:hover { background: v.$primary-light; }
+}
+.btn-table-del {
+  width: 30px; height: 30px; background: v.$danger-light; border: none; border-radius: 6px;
+  cursor: pointer; color: v.$danger; font-size: 14px;
+  display: inline-flex; align-items: center; justify-content: center;
+  &:hover { background: #fecaca; }
+}
+.crew-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg,#8b5cf6,#7c3aed);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.crown { color: #f59e0b; margin-left: 4px; }
+.badge {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px;
+}
+.badge--green  { background: v.$success-light; color: #065f46; }
+.badge--blue   { background: v.$primary-light;  color: v.$primary-dark; }
+.badge--yellow { background: v.$warning-light;  color: #92400e; }
+.badge--red    { background: v.$danger-light;   color: #991b1b; }
+.badge--purple { background: v.$purple-light;   color: #5b21b6; }
+.badge--gray   { background: v.$gray-100;       color: v.$gray-600; }
+.status-op   { background: v.$success-light; color: #065f46; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+.status-mant { background: v.$warning-light; color: #92400e; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }

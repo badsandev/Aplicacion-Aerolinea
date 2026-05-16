@@ -4,6 +4,7 @@ package com.tallerpiloto.piloto.service;
 import com.tallerpiloto.piloto.dto.PilotoDTO;
 import com.tallerpiloto.piloto.dto.PilotoResponseDTO;
 import com.tallerpiloto.piloto.model.Base;
+import com.tallerpiloto.piloto.model.EstadoPersonalAereo;
 import com.tallerpiloto.piloto.model.Piloto;
 import com.tallerpiloto.piloto.repository.BaseRepository;
 import com.tallerpiloto.piloto.repository.PilotoRepository;
@@ -31,6 +32,9 @@ public class PilotoService {
                 .codigo(dto.getCodigo())
                 .nombre(dto.getNombre())
                 .licencia(dto.getLicencia())
+                .estado(dto.getEstado() != null
+                        ? dto.getEstado()
+                        : EstadoPersonalAereo.DISPONIBLE)
                 .horasDeVuelo(dto.getHorasDeVuelo())
 
                 .build();
@@ -65,6 +69,16 @@ public class PilotoService {
         piloto.setNombre(dto.getNombre());
         piloto.setLicencia(dto.getLicencia());
         piloto.setHorasDeVuelo(dto.getHorasDeVuelo());
+
+        if (dto.getEstado() != null) {
+            piloto.setEstado(dto.getEstado());
+        }
+
+
+        if (dto.getEstado() == EstadoPersonalAereo.EN_VUELO) {
+            throw new RuntimeException("No puedes asignar manualmente EN_VUELO");
+        }
+
 
         if (dto.getBaseId() != null) {
             Base base = baseRepository.findById(dto.getBaseId())

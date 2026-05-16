@@ -23,7 +23,6 @@ public class VueloController {
 
     private final VueloService vueloService;
 
-    @Transactional
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody VueloDTO dto,
                                    UriComponentsBuilder uriComponentsBuilder) {
@@ -70,7 +69,6 @@ public class VueloController {
     }
 
 
-    @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id,
                                         @Valid @RequestBody VueloDTO dto) {
@@ -81,7 +79,6 @@ public class VueloController {
         }
     }
 
-    @Transactional
     @PutMapping("/{id}/cancelar")
     public ResponseEntity<?> cancelar(@PathVariable Long id) {
         try {
@@ -92,7 +89,7 @@ public class VueloController {
         }
     }
 
-    @Transactional
+
     @PatchMapping("/{id}/retrasar")
     public ResponseEntity<?> retrasar(@PathVariable Long id,
                                       @RequestBody Map<String, String> body) {
@@ -100,6 +97,16 @@ public class VueloController {
             LocalDateTime nuevaFecha = LocalDateTime.parse(body.get("nuevaFechaSalida"));
             vueloService.retrasar(id, nuevaFecha);
             return ResponseEntity.ok("Vuelo retrasado correctamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/aterrizar")
+    public ResponseEntity<?> aterrizar(@PathVariable Long id) {
+        try {
+            Vuelo vuelo = vueloService.aterrizar(id);
+            return ResponseEntity.ok(VueloResponseDTO.fromEntity(vuelo));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

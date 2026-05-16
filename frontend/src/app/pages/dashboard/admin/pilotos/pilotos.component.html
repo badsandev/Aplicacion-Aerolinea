@@ -1,0 +1,235 @@
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Gestión de Pilotos</h2>
+    <p class="page-sub">Registro y administración del personal de vuelo</p>
+  </div>
+
+  <button class="btn-primary" (click)="openForm()">
+    <i class="bi bi-plus-lg"></i>
+    Nuevo Piloto
+  </button>
+</div>
+
+<div class="stat-row">
+  <div class="mini-stat mini-stat--green">
+    <div class="mini-stat__icon">
+      <i class="bi bi-person-fill"></i>
+    </div>
+    <div>
+      <div class="mini-stat__label">Total Pilotos</div>
+      <div class="mini-stat__value">{{ total }}</div>
+    </div>
+  </div>
+
+  <div class="mini-stat mini-stat--blue">
+    <div class="mini-stat__icon mini-stat__icon--blue">
+      <i class="bi bi-person-check-fill"></i>
+    </div>
+    <div>
+      <div class="mini-stat__label">Activos</div>
+      <div class="mini-stat__value">{{ activos }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="ag-form-card" [hidden]="!showForm">
+  <div class="ag-form-card__header ag-form-card__header--green">
+    <h3>
+      <i class="bi" [class.bi-pencil-square]="editando" [class.bi-person-plus-fill]="!editando"></i>
+      {{ editando ? 'Editar Piloto' : 'Registrar Nuevo Piloto' }}
+    </h3>
+    <p>Complete los datos del personal y su cuenta de acceso</p>
+  </div>
+
+  <div class="ag-form-card__body">
+    <div [hidden]="editando">
+      <div class="form-section-title" style="margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+        <small class="text-muted" style="text-transform: uppercase; font-weight: bold; font-size: 0.75rem;">
+          Datos de Acceso al Sistema
+        </small>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre de Usuario <span class="required">*</span></label>
+          <input [(ngModel)]="nuevo.username" name="username" placeholder="Ej: david.herrera" />
+        </div>
+
+        <div class="form-group">
+          <label>Correo Electrónico <span class="required">*</span></label>
+          <input type="email" [(ngModel)]="nuevo.email" name="email" placeholder="piloto@airline.com" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Contraseña <span class="required">*</span></label>
+          <input type="password" [(ngModel)]="nuevo.password" name="password" placeholder="Mínimo 6 caracteres" />
+        </div>
+        <div class="form-group"></div>
+      </div>
+
+      <div class="form-section-title" style="margin: 1.5rem 0; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+        <small class="text-muted" style="text-transform: uppercase; font-weight: bold; font-size: 0.75rem;">
+          Información del Perfil Técnico
+        </small>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Código de Piloto <span class="required">*</span></label>
+        <input [(ngModel)]="nuevo.codigo" name="codigo" placeholder="Ej: P-102" />
+      </div>
+
+      <div class="form-group">
+        <label>Licencia <span class="required">*</span></label>
+        <select [(ngModel)]="nuevo.licencia" name="licencia">
+          <option [value]="null">Seleccione una licencia</option>
+          @for (l of licencias; track l) {
+            <option [value]="l">{{ l }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nombre Completo <span class="required">*</span></label>
+        <input [(ngModel)]="nuevo.nombre" name="nombre" placeholder="Solo letras y espacios" />
+        <small class="helper-text">Solo se aceptan caracteres alfabéticos</small>
+      </div>
+
+      <div class="form-group">
+        <label>Estado Personal <span class="required">*</span></label>
+        <select [(ngModel)]="nuevo.estado" name="estado">
+          @for (e of estados; track e) {
+            <option [value]="e">{{ e }}</option>
+          }
+        </select>
+        <small class="helper-text">Estado operativo del piloto</small>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Horas de Vuelo Totales <span class="required">*</span></label>
+        <input
+          type="number"
+          [(ngModel)]="nuevo.horasDeVuelo"
+          name="horasDeVuelo"
+          placeholder="0"
+          min="0"
+          step="0.1"
+        />
+        <small class="helper-text">Solo se aceptan números positivos</small>
+      </div>
+
+      <div class="form-group">
+        <label>Base Asignada <span class="optional">(opcional)</span></label>
+        <select [(ngModel)]="nuevo.baseId" name="baseId">
+          <option [value]="undefined">Sin base asignada</option>
+          @for (b of bases; track b.id) {
+            <option [value]="b.id">{{ b.nombre }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="ag-form-card__footer">
+    <button class="btn-save btn-save--green" (click)="guardar()">
+      <i class="bi bi-floppy-fill"></i>
+      {{ editando ? 'Actualizar Cambios' : 'Guardar Piloto' }}
+    </button>
+
+    <button class="btn-cancel" (click)="closeForm()">
+      <i class="bi bi-x-lg"></i> Cancelar
+    </button>
+  </div>
+</div>
+
+<div class="ag-panel">
+  <div class="ag-panel__title-bar">
+    <h3>Pilotos Registrados en el Sistema</h3>
+    <p>Lista general de tripulación técnica y estado operativo</p>
+  </div>
+
+  @if (loading === true) {
+    <div class="loading-state">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p>Cargando información de pilotos...</p>
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="ag-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Licencia</th>
+            <th>Horas</th>
+            <th>Estado Personal</th>
+            <th>Estado Sistema</th>
+            <th>Base</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (p of pilotos; track p.id) {
+            <tr>
+              <td><span class="td-code">{{ p.codigo }}</span></td>
+              <td class="td-name">{{ p.nombre }}</td>
+
+              <td>
+                <span [class]="licenciaClass(p.licencia)">
+                  {{ p.licencia || 'SIN LICENCIA' }}
+                </span>
+              </td>
+
+              <td><strong>{{ p.horasDeVuelo | number }}</strong> <small>hrs</small></td>
+
+              <td>
+                <span [class]="estadoClass(p.estado)">
+                  {{ p.estado || 'SIN ESTADO' }}
+                </span>
+              </td>
+
+              <td>
+                <span [class]="p.activo ? 'status-op' : 'status-mant'">
+                  <i class="bi" [class.bi-check-circle-fill]="p.activo" [class.bi-x-circle-fill]="!p.activo"></i>
+                  {{ p.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+
+              <td>{{ p.base || 'N/A' }}</td>
+
+              <td>
+                <div class="td-actions">
+                  <button class="btn-table-edit" (click)="editar(p)" title="Editar información">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+
+                  @if (p.activo) {
+                    <button class="btn-table-del" (click)="eliminar(p.id)" title="Desactivar piloto">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  } @else {
+                    <button class="btn-table-reactivate" (click)="reactivar(p.id)" title="Reactivar piloto">
+                      <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty-table">No se encontraron pilotos registrados.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,19 @@
+<header class="header">
+  <div class="header__left">
+    <span class="header__title">Sistema de Gestión Aeronáutica</span>
+  </div>
+  <div class="header__right">
+    <div class="header__user">
+      <div class="header__avatar">
+        {{ username.charAt(0).toUpperCase() }}
+      </div>
+      <div>
+        <div class="header__username">{{ username }}</div>
+        <div class="header__rol">{{ rol }}</div>
+      </div>
+    </div>
+    <button class="header__logout" (click)="logout()">
+      <i class="bi bi-box-arrow-right"></i>
+    </button>
+  </div>
+</header>

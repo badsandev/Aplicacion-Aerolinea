@@ -1,0 +1,169 @@
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Gestión de Aviones</h2>
+    <p class="page-sub">Administración completa de la flota de aeronaves</p>
+  </div>
+  <button class="btn-primary" (click)="openForm()">
+    <i class="bi bi-plus-lg"></i> Nuevo Avión
+  </button>
+</div>
+
+<div class="stat-row">
+  <div class="mini-stat mini-stat--blue">
+    <div class="mini-stat__icon"><i class="bi bi-airplane-fill"></i></div>
+    <div>
+      <div class="mini-stat__label">Total de Aviones</div>
+      <div class="mini-stat__value">{{ total }}</div>
+    </div>
+  </div>
+  <div class="mini-stat mini-stat--green">
+    <div class="mini-stat__icon mini-stat__icon--green"><i class="bi bi-airplane-fill"></i></div>
+    <div>
+      <div class="mini-stat__label">Operativos</div>
+      <div class="mini-stat__value">{{ operativos }}</div>
+    </div>
+  </div>
+  <div class="mini-stat mini-stat--orange">
+    <div class="mini-stat__icon mini-stat__icon--orange"><i class="bi bi-airplane-fill"></i></div>
+    <div>
+      <div class="mini-stat__label">En Mantenimiento</div>
+      <div class="mini-stat__value">{{ mantenimiento }}</div>
+    </div>
+  </div>
+</div>
+
+@if (showForm) {
+  <div class="ag-form-card">
+    <div class="ag-form-card__header ag-form-card__header--blue">
+      <h3><i class="bi bi-airplane-fill"></i> {{ editando ? 'Editar Avión' : 'Registrar Nuevo Avión' }}</h3>
+      <p>Complete los datos del avión</p>
+    </div>
+    <div class="ag-form-card__body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Código</label>
+          <input [(ngModel)]="nuevo.codigo" name="codigo" placeholder="Ej: B738-HK"/>
+        </div>
+        <div class="form-group">
+          <label>Tipo de Avión</label>
+          <input [(ngModel)]="nuevo.tipo" name="tipo" placeholder="Ej: Boeing 737-800"/>
+        </div>
+      </div>
+      <div class="form-row form-row--3col">
+        <div class="form-group">
+          <label>Capacidad (pax)</label>
+          <input type="number" [(ngModel)]="nuevo.capacidad" name="capacidad" min="1"/>
+        </div>
+        <div class="form-group">
+          <label>Horas de Vuelo</label>
+          <input type="number" [(ngModel)]="nuevo.horasDeVuelo" name="horasDeVuelo" min="0"/>
+        </div>
+        <div class="form-group">
+          <label>Año Fabricación</label>
+          <input type="number" [(ngModel)]="nuevo.yearFabricacion" name="yearFabricacion" min="1900" max="2026"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="nuevo.estado" name="estado">
+            @for (e of estados; track e) {
+              <option [value]="e">{{ e }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Base <span style="color: #9ca3af; font-size: 0.8em;">(opcional)</span></label>
+          <select [(ngModel)]="nuevo.baseId" name="baseId">
+            <option [value]="undefined">Sin base asignada</option>
+            @for (b of bases; track b.id) {
+              <option [value]="b.id">{{ b.nombre }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="ag-form-card__footer">
+      <button class="btn-save btn-save--blue" (click)="guardar()">
+        <i class="bi bi-floppy-fill"></i> {{ editando ? 'Actualizar' : 'Guardar' }}
+      </button>
+      <button class="btn-cancel" (click)="closeForm()">
+        <i class="bi bi-x-lg"></i> Cancelar
+      </button>
+    </div>
+  </div>
+}
+
+<div class="ag-panel">
+  <div class="ag-panel__title-bar">
+    <h3>Flota de Aeronaves</h3>
+    <p>Listado oficial de la compañía</p>
+  </div>
+
+  @if (loading) {
+    <div class="text-center p-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Sincronizando con el hangar...</p>
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="ag-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Modelo</th>
+            <th>Base Actual</th>
+            <th>Capacidad</th>
+            <th>Uso</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of aviones; track a.id) {
+            <tr>
+              <td>
+                <div class="td-icon">
+                  <div class="td-plane"><i class="bi bi-airplane-fill"></i></div>
+                  <span class="td-code">{{ a.codigo }}</span>
+                </div>
+              </td>
+              <td>{{ a.tipo }}</td>
+              <td>
+                <span class="badge bg-light text-dark">
+                  <i class="bi bi-geo-alt"></i> {{ a.base || 'N/A' }}
+                </span>
+              </td>
+              <td>{{ a.capacidad }} pax</td>
+              <td>{{ a.horasDeVuelo | number }} hrs</td>
+              <td>
+                <span [class]="estadoClass(a.estado)">{{ a.estado }}</span>
+              </td>
+              <td>
+                <div class="td-actions">
+                  <button class="btn-table-edit" (click)="editar(a)" title="Editar">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button class="btn-table-edit" (click)="toggleMantenimiento(a)"
+                          [title]="a.estado === 'MANTENIMIENTO' ? 'Reactivar' : 'Enviar a Taller'">
+                    <i class="bi" [class.bi-wrench-adjustable]="a.estado !== 'MANTENIMIENTO'"
+                                  [class.bi-check-circle-fill]="a.estado === 'MANTENIMIENTO'"></i>
+                  </button>
+                  <button class="btn-table-del" (click)="eliminar(a.id)" title="Retirar Avión">
+                    <i class="bi bi-trash3-fill"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="text-center text-muted p-4">
+                No hay aviones registrados en la flota.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

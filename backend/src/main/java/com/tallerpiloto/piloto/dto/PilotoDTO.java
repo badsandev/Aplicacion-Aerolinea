@@ -1,6 +1,7 @@
 package com.tallerpiloto.piloto.dto;
 
 
+import com.tallerpiloto.piloto.model.EstadoPersonalAereo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -26,6 +27,9 @@ public class PilotoDTO {
     @NotNull(message = "Las horas de vuelo no pueden ser nulas")
     @Positive(message = "Las horas de vuelo deben ser un numero positivo")
     private Double horasDeVuelo;
+
+    private EstadoPersonalAereo estado;
+
 
     private Long baseId;
 

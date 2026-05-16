@@ -1,6 +1,6 @@
 package com.tallerpiloto.piloto.dto;
 
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tallerpiloto.piloto.model.EstadoVuelo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +15,7 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class VueloDTO {
+
     @NotBlank(message = "El número de vuelo no puede estar vacío")
     private String numVuelo;
 
@@ -25,8 +26,10 @@ public class VueloDTO {
     private Long destinoId;
 
     @NotNull(message = "La fecha de salida no puede ser nula")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fechaHoraSalida;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fechaHoraLlegada;
 
     private EstadoVuelo estado;
@@ -38,6 +41,4 @@ public class VueloDTO {
     private Long pilotoId;
 
     private List<Long> tripulacionIds;
-
-
 }

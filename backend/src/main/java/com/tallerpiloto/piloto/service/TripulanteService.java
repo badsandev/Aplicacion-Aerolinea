@@ -3,6 +3,7 @@ package com.tallerpiloto.piloto.service;
 import com.tallerpiloto.piloto.dto.TripulanteDTO;
 import com.tallerpiloto.piloto.dto.TripulanteResponseDTO;
 import com.tallerpiloto.piloto.model.Base;
+import com.tallerpiloto.piloto.model.EstadoPersonalAereo;
 import com.tallerpiloto.piloto.model.Tripulante;
 import com.tallerpiloto.piloto.repository.BaseRepository;
 import com.tallerpiloto.piloto.repository.TripulanteRepository;
@@ -32,6 +33,9 @@ public class TripulanteService {
                 .codigo(dto.getCodigo())
                 .nombre(dto.getNombre())
                 .rolTripulante(dto.getRol())
+                .estado(dto.getEstado() != null
+                        ? dto.getEstado()
+                        : EstadoPersonalAereo.DISPONIBLE)
                 .base(base)
                 .activo(true)
                 .build();
@@ -53,6 +57,7 @@ public class TripulanteService {
     }
 
     public TripulanteResponseDTO actualizar(Long id, TripulanteDTO dto) {
+
         Tripulante tripulante = tripulanteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tripulante no encontrado"));
 
@@ -60,13 +65,23 @@ public class TripulanteService {
         tripulante.setNombre(dto.getNombre());
         tripulante.setRolTripulante(dto.getRol());
 
+        if (dto.getEstado() != null) {
+            tripulante.setEstado(dto.getEstado());
+        }
+
+        if (dto.getEstado() == EstadoPersonalAereo.EN_VUELO) {
+            throw new RuntimeException("No puedes asignar manualmente EN_VUELO");
+        }
+
         if (dto.getBaseId() != null) {
             Base base = baseRepository.findById(dto.getBaseId())
                     .orElseThrow(() -> new RuntimeException("Base no encontrada"));
             tripulante.setBase(base);
         }
 
-        return TripulanteResponseDTO.fromEntity(tripulanteRepository.save(tripulante));
+        return TripulanteResponseDTO.fromEntity(
+                tripulanteRepository.save(tripulante)
+        );
     }
 
     public void eliminar(Long id) {

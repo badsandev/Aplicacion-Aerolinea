@@ -67,21 +67,26 @@ public class AvionService {
                 .orElseThrow(() -> new RuntimeException("Avión no encontrado"));
     }
 
-    public AvionResponseDTO actualizar(Long id, AvionDTO dto) { // ← cambiar Avion por AvionResponseDTO
+    public AvionResponseDTO actualizar(Long id, AvionDTO dto) {
         Avion avion = buscarEntidadPorId(id);
         avion.setCodigo(dto.getCodigo());
         avion.setTipo(dto.getTipo());
         avion.setCapacidad(dto.getCapacidad());
-        avion.setEstado(dto.getEstado());
         avion.setYearFabricacion(dto.getYearFabricacion());
 
+        if (dto.getHorasDeVuelo() != null) {
+            avion.setHorasDeVuelo(dto.getHorasDeVuelo());
+        }
+        if (dto.getEstado() != null) {
+            avion.setEstado(dto.getEstado());
+        }
         if (dto.getBaseId() != null) {
             Base base = baseRepository.findById(dto.getBaseId())
                     .orElseThrow(() -> new RuntimeException("Base no encontrada"));
             avion.setBase(base);
         }
 
-        return AvionResponseDTO.fromEntity(avionRepository.save(avion)); // ← mapear al DTO
+        return AvionResponseDTO.fromEntity(avionRepository.save(avion));
     }
 
 

@@ -1,16 +1,19 @@
 package com.tallerpiloto.piloto.service;
 
 import com.tallerpiloto.piloto.dto.UsuarioDTO;
+import com.tallerpiloto.piloto.dto.UsuarioResponseDTO;
 import com.tallerpiloto.piloto.model.*;
 import com.tallerpiloto.piloto.repository.BaseRepository;
 import com.tallerpiloto.piloto.repository.UsuarioRepository;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
 @RequiredArgsConstructor
 @Service
 public class UsuarioService {
@@ -20,16 +23,12 @@ public class UsuarioService {
     private final BaseRepository baseRepository;
     private final EmailService emailService;
 
-
+    @Transactional
     public Usuario registar(UsuarioDTO dto) {
-
-        Base base = null;
-
-        if(usuarioRepository.findByUsername(dto.getUsername()).isPresent()){
+        if (usuarioRepository.findByUsername(dto.getUsername()).isPresent()) {
             throw new RuntimeException("Usuario ya existe");
         }
-
-        if(usuarioRepository.findByEmail(dto.getEmail()).isPresent()){
+        if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email ya existe");
         }
 
@@ -41,119 +40,146 @@ public class UsuarioService {
                 .activo(true)
                 .build();
 
+        // Configuración inicial de perfil técnico
         if (dto.getRol() == Rol.PILOTO) {
-
-
-
-            if(dto.getBaseId() != null){
-                base = baseRepository.findById(dto.getBaseId())
-                        .orElseThrow(() -> new RuntimeException("Base no encontrada"));
-            }
-
-            Piloto piloto = Piloto.builder()
-                    .nombre(dto.getNombre())
-                    .codigo(dto.getCodigo())
-                    .licencia(dto.getLicencia())
-                    .horasDeVuelo(dto.getHorasDeVuelo())
-                    .base(base)
-                    .build();
-
-            usuario.setPiloto(piloto);
-
+            configurarNuevoPiloto(usuario, dto);
         } else if (dto.getRol() == Rol.TRIPULANTE) {
-
-
-
-            if(dto.getBaseId() != null){
-                base = baseRepository.findById(dto.getBaseId())
-                        .orElseThrow(() -> new RuntimeException("Base no encontrada"));
-            }
-
-            Tripulante tripulante = Tripulante.builder()
-                    .nombre(dto.getNombre())
-                    .codigo(dto.getCodigo())
-                    .rolTripulante(dto.getRolTripulante())
-                    .base(base)
-                    .build();
-
-            usuario.setTripulante(tripulante);
+            configurarNuevoTripulante(usuario, dto);
         }
 
         return usuarioRepository.save(usuario);
     }
 
-    public List<Usuario> listarTodos(){
-        return usuarioRepository.findByActivoTrue();
+    public List<UsuarioResponseDTO> listarTodos() {
+        return usuarioRepository.findByActivoTrue()
+                .stream()
+                .map(UsuarioResponseDTO::fromEntity)
+                .toList();
     }
-    public Usuario buscarPorId(Long id){
-        return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-    }
-    public Usuario buscarPorUsername(String username){
-        return usuarioRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-    }
-    public Usuario actualizar(Long id, UsuarioDTO dto) {
-        Usuario usuario = buscarPorId(id);
 
-        usuario.setUsername(dto.getUsername());
-        usuario.setEmail(dto.getEmail());
+    public UsuarioResponseDTO buscarPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .map(UsuarioResponseDTO::fromEntity)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    private Usuario buscarEntidadPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    public Usuario buscarPorUsername(String username) {
+        return usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    @Transactional
+    public UsuarioResponseDTO actualizar(Long id, UsuarioDTO dto) {
+        Usuario usuario = buscarEntidadPorId(id);
+
+        // Actualización de campos básicos del Usuario
+        if (dto.getUsername() != null && !dto.getUsername().isBlank()) {
+            usuario.setUsername(dto.getUsername());
+        }
+        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+            usuario.setEmail(dto.getEmail());
+        }
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             usuario.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
         }
-        if (dto.getRol() != null) {
+
+        if (dto.getRol() != null && usuario.getRol() != Rol.ADMIN) {
             usuario.setRol(dto.getRol());
         }
 
-        if (dto.getRol() == Rol.PILOTO && usuario.getPiloto() != null) {
-            Piloto piloto = usuario.getPiloto();
-            piloto.setNombre(dto.getNombre());
-            piloto.setCodigo(dto.getCodigo());
-            piloto.setLicencia(dto.getLicencia());
-            piloto.setHorasDeVuelo(dto.getHorasDeVuelo());
-            if (dto.getBaseId() != null) {
-                piloto.setBase(baseRepository.findById(dto.getBaseId()).orElse(null));
-            }
-        } else if (dto.getRol() == Rol.TRIPULANTE && usuario.getTripulante() != null) {
-            Tripulante tripulante = usuario.getTripulante();
-            tripulante.setNombre(dto.getNombre());
-            tripulante.setCodigo(dto.getCodigo());
-            tripulante.setRolTripulante(dto.getRolTripulante());
-
-            if (dto.getBaseId() != null) {
-                tripulante.setBase(baseRepository.findById(dto.getBaseId()).orElse(null));
-            }
+        if (usuario.getRol() == Rol.PILOTO && usuario.getPiloto() != null) {
+            actualizarDatosPiloto(usuario.getPiloto(), dto);
+        }
+        else if (usuario.getRol() == Rol.TRIPULANTE && usuario.getTripulante() != null) {
+            actualizarDatosTripulante(usuario.getTripulante(), dto);
         }
 
-        return usuarioRepository.save(usuario);
+        return UsuarioResponseDTO.fromEntity(usuarioRepository.save(usuario));
     }
 
-    public void eliminar(Long id){
-        Usuario usuario  = buscarPorId(id);
+
+    private void configurarNuevoPiloto(Usuario usuario, UsuarioDTO dto) {
+        Base base = dto.getBaseId() != null ?
+                baseRepository.findById(dto.getBaseId()).orElse(null) : null;
+
+        usuario.setPiloto(Piloto.builder()
+                .nombre(dto.getNombre())
+                .codigo(dto.getCodigo())
+                .licencia(dto.getLicencia())
+                .horasDeVuelo(dto.getHorasDeVuelo())
+                .base(base)
+                .build());
+    }
+
+    private void configurarNuevoTripulante(Usuario usuario, UsuarioDTO dto) {
+        Base base = dto.getBaseId() != null ?
+                baseRepository.findById(dto.getBaseId()).orElse(null) : null;
+
+        usuario.setTripulante(Tripulante.builder()
+                .nombre(dto.getNombre())
+                .codigo(dto.getCodigo())
+                .rolTripulante(dto.getRolTripulante())
+                .base(base)
+                .build());
+    }
+
+    private void actualizarDatosPiloto(Piloto piloto, UsuarioDTO dto) {
+        piloto.setNombre(dto.getNombre());
+        piloto.setCodigo(dto.getCodigo());
+        piloto.setLicencia(dto.getLicencia());
+        piloto.setHorasDeVuelo(dto.getHorasDeVuelo());
+        if (dto.getBaseId() != null) {
+            piloto.setBase(baseRepository.findById(dto.getBaseId()).orElse(null));
+        }
+    }
+
+    private void actualizarDatosTripulante(Tripulante tripulante, UsuarioDTO dto) {
+        tripulante.setNombre(dto.getNombre());
+        tripulante.setCodigo(dto.getCodigo());
+        tripulante.setRolTripulante(dto.getRolTripulante());
+        if (dto.getBaseId() != null) {
+            tripulante.setBase(baseRepository.findById(dto.getBaseId()).orElse(null));
+        }
+    }
+
+    // --- GESTIÓN DE ESTADO Y SEGURIDAD ---
+
+    @Transactional
+    public void eliminar(Long id) {
+        Usuario usuario = buscarEntidadPorId(id);
         usuario.setActivo(false);
         usuarioRepository.save(usuario);
     }
 
-    public void reactivar(Long id){
-        Usuario usuario  = buscarPorId(id);
+    @Transactional
+    public void reactivar(Long id) {
+        Usuario usuario = buscarEntidadPorId(id);
         usuario.setActivo(true);
         usuarioRepository.save(usuario);
     }
 
-    public String generarTokenRecuperacion(String email){
+    @Transactional
+    public String generarTokenRecuperacion(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         String token = UUID.randomUUID().toString();
         usuario.setTokenRecuperacion(token);
         usuario.setTokenExpiracion(LocalDateTime.now().plusHours(1));
         usuarioRepository.save(usuario);
-
         return token;
     }
 
-    public void cambiarPassword(String token, String newpassword){
-        Usuario usuario = usuarioRepository.findByTokenRecuperacion(token).
-                orElseThrow(() -> new RuntimeException("Token no valido"));
+    @Transactional
+    public void cambiarPassword(String token, String newpassword) {
+        Usuario usuario = usuarioRepository.findByTokenRecuperacion(token)
+                .orElseThrow(() -> new RuntimeException("Token no valido"));
 
-        if(usuario.getTokenExpiracion().isBefore(LocalDateTime.now())){
+        if (usuario.getTokenExpiracion().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Token ya esta expirado");
         }
 
@@ -163,15 +189,9 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    public void solicitarRecuperar(String email){
-
+    @Transactional
+    public void solicitarRecuperar(String email) {
         String token = generarTokenRecuperacion(email);
         emailService.enviarEmailRecuperacion(email, token);
-
     }
-
-
-
-
-
 }

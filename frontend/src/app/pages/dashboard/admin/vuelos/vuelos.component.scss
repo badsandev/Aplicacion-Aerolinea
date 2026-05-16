@@ -1,0 +1,33 @@
+@use 'styles/variables' as v;
+@use 'styles/page-shared' as *;
+
+.tripulacion-grid {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;
+}
+
+.tripulante-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 20px;
+  border: 1.5px solid v.$gray-200;
+  font-size: 12px; color: v.$gray-700;
+  cursor: pointer; transition: all 0.15s;
+  background: #fff;
+
+  small { color: v.$gray-400; }
+
+  &:hover { border-color: v.$primary; color: v.$primary; }
+
+  &--selected {
+    @include v.gradient-blue;
+    color: #fff; border-color: transparent;
+    small { color: rgba(255,255,255,0.75); }
+  }
+}
+
+.empty-table {
+  text-align: center; padding: 30px;
+  color: v.$gray-400; font-size: 13px;
+}
+
+.required { color: v.$danger; margin-left: 2px; }
+.helper-text { font-size: 11px; color: v.$gray-400; }
