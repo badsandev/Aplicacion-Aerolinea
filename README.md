@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ✈ Airline Management System
 Sistema de gestión para aerolíneas desarrollado con Spring Boot (backend REST API) y Angular (frontend SPA). Permite administrar pilotos, tripulantes, aviones, vuelos y usuarios con autenticación JWT y control de acceso por roles.
 
